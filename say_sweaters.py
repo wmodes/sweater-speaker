@@ -22,7 +22,7 @@ import random
 SWEATERS =  ["wool", "cahsmere", "vest", "cotton", "plaid"]
 
 # here's our welcome & goodbye messages
-WELCOME = "Let's plan our sweaters for the next week!"
+WELCOME = "Winter is coming. Let's plan our sweaters for the next week!"
 INSTRUCT = "Type 'exit' to exit."
 GOODBYE = "With all the sweaters in our future, " + \
 	"I'm looking forward to the next several days."
