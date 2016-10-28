@@ -22,10 +22,11 @@ import random
 SWEATERS =  ["wool", "cahsmere", "vest", "cotton", "plaid"]
 
 # here's our welcome & goodbye messages
-WELCOME = "Let's plan the sweaters we want to wear!"
+WELCOME = "Let's plan our sweaters for the next week!"
 INSTRUCT = "Type 'exit' to exit."
 GOODBYE = "With all the sweaters in our future, " + \
 	"I'm looking forward to the next several days."
+INTRO = "Hello, I'm {0}."
 
 # here's our ask message
 ASK = "What kind of sweaters will you wear {0}? "
@@ -72,7 +73,12 @@ def main():
 	# choose a random voice from one installed on this system
 	voice_list = get_voices()
 	voice = random.choice(voice_list)
-	print "(Using " + voice + "'s voice)"
+	# we use the newer version of string interpolation, e.g.,
+	# 	"all {0} things".format(5) 
+	# replaces
+	# 	"all %s things" % 5
+	voice_str = INTRO.format(voice)
+	say(voice_str, voice)
 
 	# say our welcome message
 	say(WELCOME, voice)
@@ -89,10 +95,6 @@ def main():
 			day_str = "tomorrow"
 		else:
 			day_str = "on day " + str(day_count)
-		# we use the newer version of string interpolation...
-		# 	"found {0} things".format(5) 
-		# replaces
-		# 	"found %s things" % 5
 		ask_str = ASK.format(day_str)
 		say(ask_str, voice)
 		sweater = raw_input()
