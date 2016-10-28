@@ -1,8 +1,12 @@
+"""say_sweaters.py: A program to help you choose sweaters."""
+__author__      = "Wes Modes"
+__copyright__   = "2016, CC-NC"
+
 # We import the os module to access 'say'
-# old insecure way
-#	import os
-# new secure way
 import subprocess
+import os
+# import random for random numbers/choices
+import random
 
 # rather than generate a random response, ala
 #	from random import randint
@@ -10,13 +14,9 @@ import subprocess
 # instead we use the hash function and mod to 
 # generate a consistent number based on the string
 
+##########
 # CONSTANTS
-# 	All user serviceable parts should be up here
-
-# to use a voice, make sure you download it for your system
-SAY_ARGS = ""		# default voice
-SAY_ARGS = "-vTessa" # English female
-SAY_ARGS = "-vTessa" # English female
+# 	All user-serviceable parts should be up here
 
 # we define our sweater list
 SWEATERS =  ["wool", "cahsmere", "vest", "cotton", "plaid"]
@@ -41,46 +41,74 @@ RESPONSES = [
 	"Really? {0}. Bold choice.",
 	"Cool! I'll wear one of my {0} too."]
 
-day_count = 0
+##########
+# GLOBALS
+# 	Any global variables are here
 
-def say(str):
+
+##########
+# FUNCTIONS
+# 	Here we do all the heavy-lifting
+
+def get_voices():
+	# fancy linux command that returns the list of english 
+	# 	voices on this machine
+	voice_cmd = "say -v '?' | grep 'en_'|  cut -d ' ' -f 1"
+	return os.popen(voice_cmd).read().split('\n')
+
+def say(str, voice):
 	print str
+	if (voice):
+		say_args = "-v" + voice
+	else:
+		say_args = ""
 	# we use a system call to run the say command
+	# new secure way
+	subprocess.call(["say", say_args, str])
 	# old insecure way
 	#	os.system('say  "' + str + '"')
-	# new secure way
-	subprocess.call(["say", SAY_ARGS, str])
 
-# say our welcome message
-say(WELCOME)
-print(INSTRUCT)
+def main():
+	# choose a random voice from one installed on this system
+	voice_list = get_voices()
+	voice = random.choice(voice_list)
+	print "(Using " + voice + "'s voice)"
 
-# loop forever
-while (True):
-	# let's get tricky with how we say the day
-	if (day_count == 0):
-		day_str = "today"
-	elif (day_count == 1):
-		day_str = "tomorrow"
-	else:
-		day_str = "on day " + str(day_count)
-	# we use the newer version of string interpolation...
-	# 	"found {0} things".format(5) 
-	# replaces
-	# 	"found %s things" % 5
-	ask_str = ASK.format(day_str)
-	say(ask_str)
-	sweater = raw_input()
-	if (sweater.lower() == "exit"):
-		break
-	else:
-		# if sweater is not already in the input, add it to the end
-		if "sweater" not in sweater:
-			sweater += " sweaters"
-		say(sweater)
-		response_index = hash(sweater) % len(RESPONSES)
-		response_str = RESPONSES[response_index].format(sweater)
-		say(response_str)
-	day_count += 1
+	# say our welcome message
+	say(WELCOME, voice)
+	print(INSTRUCT)
 
-say(GOODBYE)
+	day_count = 0
+
+	# loop forever
+	while (True):
+		# let's get tricky with how we say the day
+		if (day_count == 0):
+			day_str = "today"
+		elif (day_count == 1):
+			day_str = "tomorrow"
+		else:
+			day_str = "on day " + str(day_count)
+		# we use the newer version of string interpolation...
+		# 	"found {0} things".format(5) 
+		# replaces
+		# 	"found %s things" % 5
+		ask_str = ASK.format(day_str)
+		say(ask_str, voice)
+		sweater = raw_input()
+		if (sweater.lower() == "exit"):
+			break
+		else:
+			# if sweater is not already in the input, add it to the end
+			if "sweater" not in sweater:
+				sweater += " sweaters"
+			say(sweater, voice)
+			response_index = hash(sweater) % len(RESPONSES)
+			response_str = RESPONSES[response_index].format(sweater)
+			say(response_str, voice)
+		day_count += 1
+
+	say(GOODBYE, voice)
+
+if __name__ == "__main__":
+	main()
